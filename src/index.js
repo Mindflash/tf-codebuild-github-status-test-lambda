@@ -48,7 +48,7 @@ export async function handler(e, ctx, done) {
  * @param  {Object}  modules.log       - logger implementation
  * @return {Promise}
  */
-export async function processEvent(e, { github, log }) {
+export async function processEvent(e, { config, github, log }) {
   // get source version
   const version = get(e, 'detail.additional-information.source-version');
   const PR = /^pr\//g;
@@ -57,13 +57,13 @@ export async function processEvent(e, { github, log }) {
     return NOOP;
   }
   // extract common info and delegate to appropriate handler
-  const build = get(e, 'detail.build-id');
   const project = get(e, 'detail.project-name');
   const type = get(e, 'detail-type');
+  const context = config.get('context', 'aws/codebuild');
   if (type === 'CodeBuild Build Phase Change') {
-    return processPhaseChange(e, { build, project, version }, { github, log });
+    return processPhaseChange(e, { context, project, version }, { github, log });
   } else if (type === 'CodeBuild Build State Change') {
-    return processStateChange(e, { build, project, version }, { github, log });
+    return processStateChange(e, { context, project, version }, { github, log });
   }
   log.warn({ type }, 'unknown event type');
   return NOOP;
@@ -81,7 +81,7 @@ export async function processEvent(e, { github, log }) {
  * @param  {Object}  modules.log    - log module
  * @return {Promise}
  */
-export async function processPhaseChange(e, { build, project, version }, { github, log }) {
+export async function processPhaseChange(e, { context, project, version }, { github, log }) {
   const status = 'pending';
   const deepLink = get(e, 'detail.additional-information.logs.deep-link');
   const phase = get(e, 'detail.completed-phase');
@@ -90,7 +90,7 @@ export async function processPhaseChange(e, { build, project, version }, { githu
   const description = `${phase} phase ${phaseStatus} after ${phaseDuration} second(s)`;
   return github.updateStatus({
     version,
-    context: build,
+    context,
     project,
     target_url: deepLink,
     state: status,
@@ -110,7 +110,7 @@ export async function processPhaseChange(e, { build, project, version }, { githu
  * @param  {Object} modules.log    - log module
  * @return {Promise}         [description]
  */
-export async function processStateChange(e, { build, project, version }, { github, log }) {
+export async function processStateChange(e, { context, project, version }, { github, log }) {
   const state = get(e, 'detail.build-status');
   let status = 'failure';
   if (state === 'IN_PROGRESS') {
@@ -133,7 +133,7 @@ export async function processStateChange(e, { build, project, version }, { githu
   }
   return github.updateStatus({
     version,
-    context: build,
+    context,
     project,
     target_url: deepLink,
     state: status,

@@ -9,6 +9,7 @@ before(async function () {
     promise: sinon.stub().resolves({
       Parameters: [{
         Value: JSON.stringify({
+          context: 'aws/codebuild',
           github: {
             url: 'https://www.example.com',
             token: 'xxxxxxxx',

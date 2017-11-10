@@ -62,7 +62,7 @@ describe('basic', function () {
     expect(configs).to.have.nested.property('post.url', `/repos/example/my-repo/statuses/${sha}`);
     const body = JSON.parse(configs.post.data);
     expect(body).to.have.property('target_url', stateEvent.detail['additional-information'].logs['deep-link']);
-    expect(body).to.have.property('context', stateEvent.detail['build-id']);
+    expect(body).to.have.property('context', this.config.get('context'));
     expect(body).to.have.property('state', 'success');
     expect(body).to.have.property('description', 'AWS Codebuild build succeeded.');
   });
@@ -93,7 +93,7 @@ describe('basic', function () {
     expect(configs).to.have.nested.property('post.url', `/repos/example/my-repo/statuses/${sha}`);
     const body = JSON.parse(configs.post.data);
     expect(body).to.have.property('target_url', stateEvent.detail['additional-information'].logs['deep-link']);
-    expect(body).to.have.property('context', stateEvent.detail['build-id']);
+    expect(body).to.have.property('context', this.config.get('context'));
     expect(body).to.have.property('state', 'pending');
     expect(body).to.have.property('description', 'PROVISIONING phase SUCCEEDED after 21 second(s)');
   });
