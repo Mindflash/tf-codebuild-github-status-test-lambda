@@ -7,7 +7,7 @@ services:
     command: npm run coverage
     environment:
       CONFIG_PARAMETER_NAMES: foo,bar
-      DEBUG: app-container*
+      #DEBUG: app-container*
       LOG_LEVEL: fatal
       NODE_ENV: test
     volumes:
