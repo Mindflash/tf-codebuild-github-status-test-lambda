@@ -3,15 +3,14 @@ digraph architecture {
   cb1 [label="Project 1 (CodeBuild)" shape="rect" fillcolor="seagreen1" style="filled"];
   cb2 [label="Project 2 (CodeBuild)" shape="rect" fillcolor="seagreen1" style="filled"];
   cb3 [label="Project n (CodeBuild)" shape="rect" fillcolor="seagreen1" style="filled"];
+  cloudwatch [label="Cloudwatch Event Rule" shape="rect" fillcolor="darkslategray4" style="filled"];
 
   subgraph cluster_gw {
     color="black";
-    cloudwatch [label="Cloudwatch Event Rule" shape="rect" fillcolor="darkslategray4" style="filled"];
     fn [label="tf-codebuild-github-status (λ)" shape="rect" fillcolor="orange" style="filled"];
-
-    cloudwatch -> fn;
   }
 
   cb1,cb2,cb3 -> cloudwatch
+  cloudwatch -> fn;
   fn -> github
 }
